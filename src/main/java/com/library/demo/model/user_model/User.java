@@ -1,6 +1,7 @@
 package com.library.demo.model.user_model;
 
 
+import com.library.demo.model.membership_model.Membership;
 import jakarta.persistence.*;
 import lombok.*;
 import org.jspecify.annotations.Nullable;
@@ -41,6 +42,8 @@ public class User implements UserDetails {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @OneToOne(mappedBy = "user", optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Membership membership;
 
 
 

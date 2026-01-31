@@ -1,5 +1,6 @@
 package com.library.demo.model.membership_model;
 
+import com.library.demo.model.user_model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "memberships")
@@ -19,16 +21,18 @@ public class Membership {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name= "user_id", nullable = false)
-    private long userId;
-
-    @Column(name = "type", length = 20, nullable = false)
+    @Column(length = 20, nullable = false)
+    @Enumerated(EnumType.STRING)
     private MembershipType type;
 
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
+    private LocalDateTime startDate;
     @Column(name = "end_date")
-    private LocalDate endDate;
+    private LocalDateTime endDate;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 
 }

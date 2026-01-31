@@ -4,6 +4,8 @@ import com.library.demo.auth.JwtUtil;
 import com.library.demo.dto.UserDto;
 import com.library.demo.exception.InvalidCredentialsException;
 import com.library.demo.dto.LoginDto;
+import com.library.demo.model.membership_model.Membership;
+import com.library.demo.model.membership_model.MembershipType;
 import com.library.demo.model.user_model.Role;
 import com.library.demo.model.user_model.Status;
 import com.library.demo.model.user_model.User;
@@ -27,16 +29,25 @@ public class UserService {
 
     public String saveUser(UserDto userDto){
 
+        LocalDateTime localDateTime = LocalDateTime.now();
         String password = passwordEncoder.encode(userDto.getPassword());
         Role role = Role.valueOf(userDto.getRole().toUpperCase());
         User user = User.builder()
                 .email(userDto.getEmail())
                 .password(password)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(localDateTime)
+                .updatedAt(localDateTime)
                 .status(Status.ACTIVE)
                 .role(role)
                 .build();
+        if(role == Role.USER){
+            Membership membership = Membership.builder()
+                    .type(MembershipType.BASIC)
+                    .startDate(localDateTime)
+                    .user(user)
+                    .build();
+            user.setMembership(membership);
+        }
         userRepository.save(user);
         return jwtUtil.generateToken(user);
     }
