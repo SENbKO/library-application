@@ -1,17 +1,10 @@
 package com.library.demo.controller;
 
 import com.library.demo.dto.UserDto;
-import com.library.demo.model.Role;
-import com.library.demo.model.User;
+import com.library.demo.dto.LoginDto;
 import com.library.demo.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDateTime;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -28,4 +21,13 @@ public class UserController {
         String token = userService.saveUser(userDto);
         return ResponseEntity.ok(token);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginDto loginDto){
+        String token = userService.findUser(loginDto);
+
+        return ResponseEntity.ok(token);
+
+    }
+
 }

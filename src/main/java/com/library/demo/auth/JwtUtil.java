@@ -1,10 +1,9 @@
 package com.library.demo.auth;
 
-import com.library.demo.model.User;
+import com.library.demo.model.user_model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
@@ -44,5 +43,17 @@ public class JwtUtil {
             System.out.println(e);
             return false;
         }
+    }
+
+    public String extractEmail(String token){
+        try{
+            Claims claims = extractClaims(token);
+            return claims.getSubject();
+        }catch (JwtException e){
+            System.out.println(e);
+            return null;
+        }
+
+
     }
 }

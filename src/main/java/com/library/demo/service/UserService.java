@@ -2,11 +2,12 @@ package com.library.demo.service;
 
 import com.library.demo.auth.JwtUtil;
 import com.library.demo.dto.UserDto;
-import com.library.demo.model.Role;
-import com.library.demo.model.Status;
-import com.library.demo.model.User;
+import com.library.demo.exception.InvalidCredentialsException;
+import com.library.demo.dto.LoginDto;
+import com.library.demo.model.user_model.Role;
+import com.library.demo.model.user_model.Status;
+import com.library.demo.model.user_model.User;
 import com.library.demo.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,19 @@ public class UserService {
                 .role(role)
                 .build();
         userRepository.save(user);
+        return jwtUtil.generateToken(user);
+    }
+
+    public String findUser(LoginDto loginDto) {
+        User user = userRepository.findByEmail(loginDto.getEmail())
+                .orElseThrow(InvalidCredentialsException::new);
+
+        if(!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())){
+            System.out.println("invalid password");
+            throw new InvalidCredentialsException();
+
+        }
+
         return jwtUtil.generateToken(user);
     }
 }
