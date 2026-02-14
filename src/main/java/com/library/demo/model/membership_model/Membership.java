@@ -30,7 +30,7 @@ public class Membership {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @OneToOne
+    @OneToOne()
     @JoinColumn(name = "user_id")
     private User user;
 

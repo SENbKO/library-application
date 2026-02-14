@@ -1,21 +1,24 @@
 package com.library.demo.controller;
 
 import com.library.demo.dto.BookRequest;
+import com.library.demo.model.user_model.User;
 import com.library.demo.service.InventoryService;
+import com.library.demo.service.LoanService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class BookController {
 
     private final InventoryService inventoryService;
+    private final LoanService loanService;
 
-    public BookController(InventoryService inventoryService) {
+    public BookController(InventoryService inventoryService, LoanService loanService) {
         this.inventoryService = inventoryService;
+        this.loanService = loanService;
     }
 
     @GetMapping("/health")
@@ -28,5 +31,27 @@ public class BookController {
     public ResponseEntity<?> addBook(@RequestBody BookRequest bookRequest){
         inventoryService.addBook(bookRequest);
         return ResponseEntity.ok().body(bookRequest.getTitle() + " added!");
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/borrow/{isbn}")
+    public ResponseEntity<?> loanBook(@PathVariable("isbn") String isbn, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        if(user != null){
+            loanService.borrowBook(user, isbn);
+            return ResponseEntity.ok("Book " + isbn + " added!");
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No such user");
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/return/{loanId}")
+    public ResponseEntity<?> returnBook(@PathVariable("loanId") long loanId, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        if(user != null){
+            loanService.returnBook(user.getId(), loanId);
+            return ResponseEntity.ok("Loan " + loanId + " returned!");
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No such user");
     }
 }

@@ -1,6 +1,7 @@
 package com.library.demo.exception.exception_handler;
 
 import com.library.demo.exception.InvalidCredentialsException;
+import com.library.demo.exception.loan_exception.LoanException;
 import com.library.demo.model.ApiError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,5 +15,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ApiError(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", ex.getMessage()));
+    }
+
+    @ExceptionHandler(LoanException.class)
+    public ResponseEntity<ApiError> handleLoanException(LoanException ex){
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiError(HttpStatus.UNAUTHORIZED, ex.getMessage(), ex.getMessage()));
     }
 }
