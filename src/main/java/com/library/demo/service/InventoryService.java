@@ -1,11 +1,17 @@
 package com.library.demo.service;
 
+import com.library.demo.dto.BookDto;
+import com.library.demo.dto.BookPageResponse;
 import com.library.demo.dto.BookRequest;
 import com.library.demo.model.book_model.Book;
 import com.library.demo.model.book_model.BookCopy;
 import com.library.demo.model.book_model.BookCopyStatus;
 import com.library.demo.repository.BookCopyRepository;
 import com.library.demo.repository.BookRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -52,6 +58,17 @@ public class InventoryService {
 
         book.setBookCopies(bookCopies);
         bookRepository.save(book);
+
+    }
+    public BookPageResponse showBooks(Integer pageNumber, Integer pageSize){
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("title").ascending());
+        Page<BookDto> pages = bookRepository.findBooksByAvailableCopies(BookCopyStatus.AVAILABLE, pageable);
+        return BookPageResponse.builder()
+                .books(pages.getContent())
+                .allPages(pages.getTotalPages())
+                .currentPage(pages.getNumber())
+                .build();
+
 
     }
 }

@@ -1,5 +1,6 @@
 package com.library.demo.controller;
 
+import com.library.demo.dto.BookPageResponse;
 import com.library.demo.dto.BookRequest;
 import com.library.demo.model.user_model.User;
 import com.library.demo.service.InventoryService;
@@ -53,5 +54,14 @@ public class BookController {
             return ResponseEntity.ok("Loan " + loanId + " returned!");
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No such user");
+    }
+
+    @GetMapping("/books")
+    public ResponseEntity<?> showBooks(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                       @RequestParam(value = "size", defaultValue = "5") Integer size
+                                       ){
+
+        BookPageResponse response = inventoryService.showBooks(page, size);
+        return ResponseEntity.ok(response);
     }
 }
