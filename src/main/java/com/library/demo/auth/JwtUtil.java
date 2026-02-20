@@ -1,14 +1,19 @@
 package com.library.demo.auth;
 
+import com.library.demo.model.user_model.Role;
 import com.library.demo.model.user_model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class JwtUtil {
@@ -53,7 +58,17 @@ public class JwtUtil {
             System.out.println(e);
             return null;
         }
+    }
 
+    public Collection<? extends GrantedAuthority> getAuthorities(String token){
+        try{
+            Claims claims = extractClaims(token);
+            String role = (String) claims.get("role");
+            return List.of(new SimpleGrantedAuthority("ROLE_"+ role));
+        }catch (JwtException e){
+            e.printStackTrace();
+            return null;
+        }
 
     }
 }
