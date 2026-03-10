@@ -6,11 +6,13 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -18,8 +20,13 @@ import java.util.List;
 @Component
 public class JwtUtil {
     private final long expirationTime = 1000 * 60 * 60;
-    private static final Key key =
-            Keys.hmacShaKeyFor("my-super-secret-key-my-super-secret-key".getBytes());
+
+    private final Key key;
+
+    public JwtUtil(@Value("${jwt-key}") String jwtKey) {
+        this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtKey));
+    }
+
 
     public String generateToken(User user){
         return Jwts.builder()
@@ -72,3 +79,4 @@ public class JwtUtil {
 
     }
 }
+
